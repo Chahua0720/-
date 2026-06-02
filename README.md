@@ -1,1 +1,1669 @@
-# -
+# -<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>河源中学平面图导览系统</title>
+  <meta name="description" content="河源中学平面图导览系统，单地图界面，支持标点、留言与后台管理。" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root{
+      --bg: #f5f8fd;
+      --card: rgba(255,255,255,0.74);
+      --text: #111827;
+      --muted: #6b7280;
+      --line: rgba(255,255,255,0.6);
+      --line-soft: #e5e7eb;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warn: #f59e0b;
+      --radius: 16px;
+      --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 22px 54px rgba(15, 23, 42, 0.16);
+      --sidebar-w: 320px;
+      --admin-w: 360px;
+    }
+
+    *{ box-sizing: border-box; }
+
+    html, body{
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(14,165,233,0.08), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(99,102,241,0.06), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, #edf3fb 100%);
+    }
+
+    body{
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    button, input, textarea, select{ font: inherit; }
+    img{ max-width: 100%; }
+
+    .glass{
+      background: rgba(255,255,255,0.74);
+      backdrop-filter: blur(18px) saturate(165%);
+      -webkit-backdrop-filter: blur(18px) saturate(165%);
+      border: 1px solid rgba(255,255,255,0.58);
+      box-shadow:
+        0 14px 36px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.78);
+    }
+
+    .glass-strong{
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(22px) saturate(170%);
+      -webkit-backdrop-filter: blur(22px) saturate(170%);
+      border: 1px solid rgba(255,255,255,0.70);
+      box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.86);
+    }
+
+    .topbar{
+      height: 64px;
+      background: rgba(255,255,255,0.76);
+      backdrop-filter: blur(18px) saturate(165%);
+      -webkit-backdrop-filter: blur(18px) saturate(165%);
+      border-bottom: 1px solid rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .brand{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      font-weight: 700;
+    }
+
+    .brand-logo{
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1px solid #dbeafe;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      box-shadow: 0 8px 18px rgba(59,130,246,0.12);
+    }
+
+    .brand span{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-actions{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(229,231,235,0.9);
+      color: var(--muted);
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .badge-blue{
+      background: #eff6ff;
+      color: var(--primary);
+      border-color: #dbeafe;
+    }
+
+    .badge-green{
+      background: #ecfdf5;
+      color: var(--success);
+      border-color: #d1fae5;
+    }
+
+    .badge-yellow{
+      background: #fffbeb;
+      color: var(--warn);
+      border-color: #fde68a;
+    }
+
+    .btn{
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: .2s ease;
+      background: transparent;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .btn-primary{
+      background: linear-gradient(135deg, #4f8df7, #3b82f6);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(59,130,246,0.18);
+    }
+    .btn-primary:hover{
+      background: linear-gradient(135deg, #4a86ef, #2563eb);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost{
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-color: rgba(229,231,235,0.9);
+    }
+    .btn-ghost:hover{
+      background: rgba(255,255,255,0.9);
+    }
+
+    .btn-danger{
+      background: #fff1f2;
+      color: var(--danger);
+      border-color: #fecdd3;
+    }
+
+    .btn-danger:hover{
+      background: #ffe4e6;
+    }
+
+    .btn-sm{
+      height: 34px;
+      border-radius: 10px;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+
+    .layout{
+      height: calc(100vh - 64px);
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr var(--admin-w);
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .panel{
+      position: relative;
+      background: rgba(255,255,255,0.74);
+      backdrop-filter: blur(18px) saturate(165%);
+      -webkit-backdrop-filter: blur(18px) saturate(165%);
+      border: 1px solid rgba(255,255,255,0.58);
+      border-radius: 18px;
+      box-shadow:
+        0 16px 40px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.74);
+      overflow: hidden;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel::before,
+    .map-panel::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.36), transparent 36%);
+    }
+
+    .panel-head{
+      padding: 16px;
+      border-bottom: 1px solid rgba(229,231,235,0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-body{
+      padding: 16px;
+      overflow: auto;
+      min-height: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .map-panel{
+      position: relative;
+      background: rgba(255,255,255,0.74);
+      backdrop-filter: blur(18px) saturate(165%);
+      -webkit-backdrop-filter: blur(18px) saturate(165%);
+      border: 1px solid rgba(255,255,255,0.58);
+      border-radius: 18px;
+      box-shadow:
+        0 16px 40px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.74);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .map-toolbar{
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(229,231,235,0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(252,253,255,0.76));
+      position: relative;
+      z-index: 1;
+    }
+
+    .map-stage{
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,0.55), rgba(248,250,252,0.95)),
+        rgba(248,250,252,0.88);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .map-stage img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      background: rgba(248,250,252,0.9);
+    }
+
+    .map-empty{
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+    .map-overlay{
+      position: absolute;
+      inset: 0;
+    }
+
+    .marker-dot{
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 3px solid #fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .marker-tag{
+      position: absolute;
+      transform: translate(10px, -50%);
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(229,231,235,0.9);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .list{
+      display: grid;
+      gap: 12px;
+    }
+
+    .item{
+      background: rgba(255,255,255,0.68);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .item-main{
+      min-width: 0;
+      flex: 1;
+    }
+
+    .item-title{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .item-meta{
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .item-actions{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .input, .textarea, .select{
+      width: 100%;
+      border: 1px solid rgba(229,231,235,0.95);
+      background: rgba(255,255,255,0.78);
+      color: var(--text);
+      border-radius: 12px;
+      outline: none;
+      transition: .2s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .input, .select{
+      height: 40px;
+      padding: 0 12px;
+    }
+
+    .textarea{
+      min-height: 100px;
+      padding: 12px;
+      resize: vertical;
+    }
+
+    .input:focus, .textarea:focus, .select:focus{
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+      background: rgba(255,255,255,0.94);
+    }
+
+    .form{
+      display: grid;
+      gap: 12px;
+    }
+
+    .field{
+      display: grid;
+      gap: 6px;
+    }
+
+    .label{
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .split{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .search-box{
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-box .input{
+      flex: 1;
+    }
+
+    .section-title{
+      margin: 0 0 10px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .muted{
+      color: var(--muted);
+    }
+
+    .login-prompt{
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .hidden{
+      display: none !important;
+    }
+
+    .tabs{
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px 0;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab{
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(229,231,235,0.9);
+      background: rgba(255,255,255,0.78);
+      cursor: pointer;
+      font-size: 13px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .tab.active{
+      background: #eff6ff;
+      border-color: #dbeafe;
+      color: var(--primary);
+    }
+
+    .tab-pane{
+      display: none;
+    }
+
+    .tab-pane.active{
+      display: block;
+    }
+
+    .modal{
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal.show{
+      display: flex;
+    }
+
+    .modal-content{
+      width: 100%;
+      max-width: 460px;
+      background: rgba(255,255,255,0.80);
+      backdrop-filter: blur(22px) saturate(170%);
+      -webkit-backdrop-filter: blur(22px) saturate(170%);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.68);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .modal-header{
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(229,231,235,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(255,255,255,0.55);
+    }
+
+    .modal-body{
+      padding: 18px;
+    }
+
+    .toast-wrap{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 200;
+      display: grid;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast{
+      pointer-events: auto;
+      min-width: 260px;
+      max-width: 360px;
+      background: rgba(255,255,255,0.80);
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      border: 1px solid rgba(229,231,235,0.95);
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .toast .icon{
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    .toast.success .icon{ background: #ecfdf5; color: var(--success); }
+    .toast.error .icon{ background: #fff1f2; color: var(--danger); }
+    .toast.info .icon{ background: #eff6ff; color: var(--primary); }
+
+    .toast strong{
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .toast p{
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .footer-bar{
+      padding: 0 16px 16px;
+      color: var(--muted);
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 1180px){
+      body{ overflow: auto; }
+      .layout{
+        height: auto;
+        min-height: calc(100vh - 64px);
+        grid-template-columns: 1fr;
+      }
+      .panel, .map-panel{
+        min-height: 520px;
+      }
+    }
+
+    @media (max-width: 640px){
+      .topbar{
+        padding: 0 12px;
+      }
+      .layout{
+        padding: 12px;
+        gap: 12px;
+      }
+      .split{
+        grid-template-columns: 1fr;
+      }
+      .item{
+        flex-direction: column;
+      }
+      .item-actions{
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .top-actions{
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo"><i data-lucide="map-pinned"></i></div>
+      <span id="siteTitleTop">河源中学平面图导览系统</span>
+    </div>
+
+    <div class="top-actions">
+      <span id="loginStatusBadge" class="badge">未登录</span>
+      <button class="btn btn-ghost btn-sm" onclick="openLogin()">
+        <i data-lucide="user"></i> 登录
+      </button>
+      <button id="logoutBtn" class="btn btn-ghost btn-sm hidden" onclick="logout()">
+        <i data-lucide="log-out"></i> 退出
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 左侧：标点 + 留言 -->
+    <aside class="panel">
+      <div class="panel-head">
+        <strong>校园信息</strong>
+        <span class="badge badge-blue" id="markerCountBadge">0 个标点</span>
+      </div>
+
+      <div class="panel-body">
+        <div class="tabs">
+          <button class="tab active" data-tab="markersTab">标点</button>
+          <button class="tab" data-tab="messagesTab">留言</button>
+        </div>
+
+        <div id="markersTab" class="tab-pane active" style="margin-top:12px;">
+          <div class="search-box" style="margin-bottom:12px;">
+            <input class="input" id="markerSearch" placeholder="搜索标点名称" />
+            <button class="btn btn-ghost" type="button" onclick="clearMarkerSearch()">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+
+          <div id="markerList" class="list"></div>
+        </div>
+
+        <div id="messagesTab" class="tab-pane" style="margin-top:12px;">
+          <div class="card glass" style="border-radius:14px; padding:14px; margin-bottom:12px;">
+            <form id="publicMessageForm" class="form">
+              <div class="field">
+                <label class="label">姓名</label>
+                <input class="input" name="name" placeholder="可留空" />
+              </div>
+              <div class="field">
+                <label class="label">联系方式</label>
+                <input class="input" name="contact" placeholder="电话 / 微信 / 邮箱（可选）" />
+              </div>
+              <div class="field">
+                <label class="label">留言内容</label>
+                <textarea class="textarea" name="content" placeholder="请输入留言内容"></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit">
+                <i data-lucide="send"></i> 提交留言
+              </button>
+            </form>
+          </div>
+
+          <div class="section-title">
+            <span>最近留言</span>
+            <span class="badge">公开展示</span>
+          </div>
+          <div id="publicMessageList" class="list"></div>
+        </div>
+      </div>
+
+      <div class="footer-bar">白色固态玻璃单地图界面</div>
+    </aside>
+
+    <!-- 中间：地图 -->
+    <section class="map-panel">
+      <div class="map-toolbar">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <strong id="siteTitleMid">河源中学平面图导览系统</strong>
+          <span class="badge badge-green" id="contactBadge">联系电话：--</span>
+          <span class="badge badge-yellow" id="noticeBadge">公告：--</span>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="focusFirstMarker()">
+            <i data-lucide="crosshair"></i> 定位首个标点
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="reloadAll()">
+            <i data-lucide="refresh-cw"></i> 刷新
+          </button>
+        </div>
+      </div>
+
+      <div id="mapStage" class="map-stage">
+        <div id="mapEmpty" class="map-empty">
+          <div>
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">暂无地图</div>
+            <div>管理员上传地图后，会在这里显示完整校园平面图。</div>
+          </div>
+        </div>
+        <img id="mapImage" alt="校园地图" style="display:none;" />
+        <div id="mapOverlay" class="map-overlay"></div>
+      </div>
+    </section>
+
+    <!-- 右侧：管理后台 -->
+    <aside class="panel">
+      <div class="panel-head">
+        <strong>管理后台</strong>
+        <span class="badge badge-blue" id="adminStateBadge">未登录</span>
+      </div>
+
+      <div class="panel-body">
+        <div id="adminLocked" class="login-prompt">
+          <div class="card glass" style="padding:14px; border-radius:14px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <span class="badge badge-blue"><i data-lucide="lock"></i> 仅管理员可见</span>
+            </div>
+            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">请先登录</div>
+            <div class="muted" style="font-size:13px; line-height:1.7;">
+              登录后可编辑站点信息、上传地图、管理标点与留言。
+            </div>
+            <div style="margin-top:12px;">
+              <button class="btn btn-primary" onclick="openLogin()">
+                <i data-lucide="user"></i> 管理员登录
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminPanel" class="hidden">
+          <div class="tabs" style="padding-left:0; padding-right:0;">
+            <button class="tab active" data-admin-tab="siteTab">站点</button>
+            <button class="tab" data-admin-tab="markerAdminTab">标点</button>
+            <button class="tab" data-admin-tab="messageAdminTab">留言</button>
+          </div>
+
+          <div id="siteTab" class="tab-pane active" style="margin-top:12px;">
+            <div class="card glass" style="padding:14px; border-radius:14px;">
+              <form id="siteForm" class="form">
+                <div class="field">
+                  <label class="label">网站标题</label>
+                  <input class="input" name="title" placeholder="网站标题" />
+                </div>
+                <div class="field">
+                  <label class="label">网站描述</label>
+                  <textarea class="textarea" name="desc" placeholder="网站描述"></textarea>
+                </div>
+                <div class="field">
+                  <label class="label">公告</label>
+                  <textarea class="textarea" name="notice" placeholder="公告内容"></textarea>
+                </div>
+                <div class="split">
+                  <div class="field">
+                    <label class="label">联系电话</label>
+                    <input class="input" name="contact" placeholder="联系电话" />
+                  </div>
+                  <div class="field">
+                    <label class="label">管理员名称</label>
+                    <input class="input" name="adminName" placeholder="管理员名称" />
+                  </div>
+                </div>
+                <button class="btn btn-primary" type="submit">
+                  <i data-lucide="save"></i> 保存设置
+                </button>
+              </form>
+            </div>
+
+            <div class="card glass" style="padding:14px; border-radius:14px; margin-top:12px;">
+              <form id="mapUploadForm" class="form">
+                <div class="field">
+                  <label class="label">上传地图图片</label>
+                  <input class="input" type="file" name="mapImage" accept="image/*" />
+                </div>
+                <button class="btn btn-primary" type="submit">
+                  <i data-lucide="upload"></i> 上传地图
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div id="markerAdminTab" class="tab-pane" style="margin-top:12px;">
+            <div class="card glass" style="padding:14px; border-radius:14px;">
+              <div class="section-title">
+                <span>标点编辑</span>
+                <span class="badge" id="editingMarkerBadge">新增模式</span>
+              </div>
+
+              <form id="markerForm" class="form">
+                <input type="hidden" id="markerId" name="id" />
+                <div class="field">
+                  <label class="label">名称</label>
+                  <input class="input" name="name" placeholder="例如：教学楼" />
+                </div>
+                <div class="split">
+                  <div class="field">
+                    <label class="label">分类</label>
+                    <input class="input" name="category" placeholder="例如：教学区" />
+                  </div>
+                  <div class="field">
+                    <label class="label">颜色</label>
+                    <input class="input" type="color" name="color" value="#3b82f6" style="padding:4px; height:40px;" />
+                  </div>
+                </div>
+                <div class="split">
+                  <div class="field">
+                    <label class="label">X 坐标（0-100）</label>
+                    <input class="input" name="x" type="number" step="0.1" min="0" max="100" placeholder="0 ~ 100" />
+                  </div>
+                  <div class="field">
+                    <label class="label">Y 坐标（0-100）</label>
+                    <input class="input" name="y" type="number" step="0.1" min="0" max="100" placeholder="0 ~ 100" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">备注</label>
+                  <textarea class="textarea" name="remark" placeholder="标点说明"></textarea>
+                </div>
+                <div class="field">
+                  <label class="label">图片地址（可选）</label>
+                  <input class="input" name="image" placeholder="图片 URL" />
+                </div>
+                <div class="field">
+                  <label class="label">上传图片文件（可选）</label>
+                  <input class="input" type="file" name="imageFile" accept="image/*" />
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <button class="btn btn-primary" type="submit">
+                    <i data-lucide="save"></i> 保存标点
+                  </button>
+                  <button class="btn btn-ghost" type="button" onclick="resetMarkerForm()">
+                    <i data-lucide="rotate-ccw"></i> 重置
+                  </button>
+                </div>
+                <div class="muted" style="font-size:12px; line-height:1.7;">
+                  提示：管理员可直接点击地图来填写坐标。
+                </div>
+              </form>
+            </div>
+
+            <div class="card glass" style="padding:14px; border-radius:14px; margin-top:12px;">
+              <div class="section-title">
+                <span>标点列表</span>
+                <span class="badge" id="adminMarkerCount">0 个</span>
+              </div>
+              <div id="adminMarkerList" class="list"></div>
+            </div>
+          </div>
+
+          <div id="messageAdminTab" class="tab-pane" style="margin-top:12px;">
+            <div class="card glass" style="padding:14px; border-radius:14px;">
+              <div class="section-title">
+                <span>留言管理</span>
+                <span class="badge" id="adminMessageCount">0 条</span>
+              </div>
+              <div id="adminMessageList" class="list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 登录弹窗 -->
+  <div id="loginModal" class="modal" onclick="closeLoginOnBackdrop(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>管理员登录</strong>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="closeLogin()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm" class="form">
+          <div class="field">
+            <label class="label">账号</label>
+            <input class="input" name="username" placeholder="管理员账号" autocomplete="username" />
+          </div>
+          <div class="field">
+            <label class="label">密码</label>
+            <input class="input" name="password" type="password" placeholder="管理员密码" autocomplete="current-password" />
+          </div>
+          <div class="muted" style="font-size:13px; line-height:1.7;">
+            默认账号：admin，默认密码：123456
+          </div>
+          <button class="btn btn-primary" type="submit">
+            <i data-lucide="log-in"></i> 登录
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastWrap" class="toast-wrap"></div>
+
+  <script>
+    const state = {
+      site: {},
+      markers: [],
+      publicMessages: [],
+      adminMessages: [],
+      me: null,
+      selectedMarkerId: null,
+      editingMarkerId: null,
+      markerSearch: ''
+    };
+
+    const $ = (sel) => document.querySelector(sel);
+
+    const els = {
+      siteTitleTop: $('#siteTitleTop'),
+      siteTitleMid: $('#siteTitleMid'),
+      contactBadge: $('#contactBadge'),
+      noticeBadge: $('#noticeBadge'),
+      loginStatusBadge: $('#loginStatusBadge'),
+      adminStateBadge: $('#adminStateBadge'),
+      logoutBtn: $('#logoutBtn'),
+      adminLocked: $('#adminLocked'),
+      adminPanel: $('#adminPanel'),
+      loginModal: $('#loginModal'),
+      loginForm: $('#loginForm'),
+      siteForm: $('#siteForm'),
+      mapUploadForm: $('#mapUploadForm'),
+      markerForm: $('#markerForm'),
+      markerId: $('#markerId'),
+      editingMarkerBadge: $('#editingMarkerBadge'),
+      markerList: $('#markerList'),
+      markerSearch: $('#markerSearch'),
+      markerCountBadge: $('#markerCountBadge'),
+      publicMessageForm: $('#publicMessageForm'),
+      publicMessageList: $('#publicMessageList'),
+      adminMarkerList: $('#adminMarkerList'),
+      adminMarkerCount: $('#adminMarkerCount'),
+      adminMessageList: $('#adminMessageList'),
+      adminMessageCount: $('#adminMessageCount'),
+      mapImage: $('#mapImage'),
+      mapEmpty: $('#mapEmpty'),
+      mapOverlay: $('#mapOverlay'),
+      mapStage: $('#mapStage'),
+      toastWrap: $('#toastWrap')
+    };
+
+    function escapeHtml(str = '') {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function formatTime(value) {
+      if (!value) return '';
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return String(value);
+      return d.toLocaleString('zh-CN', { hour12: false });
+    }
+
+    function notify(title, message = '', type = 'info') {
+      const iconName = type === 'success' ? 'circle-check'
+        : type === 'error' ? 'circle-x'
+        : 'info';
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div class="icon"><i data-lucide="${iconName}"></i></div>
+        <div>
+          <strong>${escapeHtml(title)}</strong>
+          <p>${escapeHtml(message)}</p>
+        </div>
+      `;
+      els.toastWrap.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(4px)';
+        toast.style.transition = '0.2s ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 2600);
+    }
+
+    async function api(url, options = {}) {
+      const opts = {
+        credentials: 'include',
+        ...options,
+        headers: {
+          ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+          ...(options.headers || {})
+        }
+      };
+
+      const res = await fetch(url, opts);
+      let data = {};
+      try { data = await res.json(); } catch {}
+      if (!res.ok) throw new Error(data.error || '请求失败');
+      return data;
+    }
+
+    function openLogin() {
+      els.loginModal.classList.add('show');
+      setTimeout(() => els.loginForm.querySelector('input[name="username"]').focus(), 50);
+    }
+
+    function closeLogin() {
+      els.loginModal.classList.remove('show');
+    }
+
+    function closeLoginOnBackdrop(e) {
+      if (e.target === els.loginModal) closeLogin();
+    }
+
+    function setLoginUI() {
+      const loggedIn = !!state.me;
+      els.loginStatusBadge.textContent = loggedIn
+        ? `已登录：${state.me.displayName || state.me.username || '管理员'}`
+        : '未登录';
+
+      els.adminStateBadge.textContent = loggedIn ? '已登录' : '未登录';
+      els.logoutBtn.classList.toggle('hidden', !loggedIn);
+      els.adminLocked.classList.toggle('hidden', loggedIn);
+      els.adminPanel.classList.toggle('hidden', !loggedIn);
+      els.adminStateBadge.className = 'badge ' + (loggedIn ? 'badge-green' : '');
+
+      if (loggedIn) fillSiteForm();
+    }
+
+    function renderSite() {
+      const title = state.site.title || '河源中学平面图导览系统';
+      const notice = state.site.notice || '欢迎使用系统';
+      const contact = state.site.contact || '--';
+
+      document.title = title;
+      els.siteTitleTop.textContent = title;
+      els.siteTitleMid.textContent = title;
+      els.noticeBadge.textContent = `公告：${notice}`;
+      els.contactBadge.textContent = `联系电话：${contact}`;
+
+      const mapUrl = state.site.mapImage || '';
+      if (mapUrl) {
+        els.mapImage.src = mapUrl;
+        els.mapImage.style.display = 'block';
+        els.mapEmpty.style.display = 'none';
+      } else {
+        els.mapImage.removeAttribute('src');
+        els.mapImage.style.display = 'none';
+        els.mapEmpty.style.display = 'grid';
+      }
+    }
+
+    function markerLabel(m) {
+      return m.category ? `${m.name} · ${m.category}` : m.name;
+    }
+
+    function filteredMarkers() {
+      const q = (state.markerSearch || '').trim().toLowerCase();
+      if (!q) return state.markers;
+      return state.markers.filter(m =>
+        (m.name || '').toLowerCase().includes(q) ||
+        (m.category || '').toLowerCase().includes(q) ||
+        (m.remark || '').toLowerCase().includes(q)
+      );
+    }
+
+    function renderMarkers() {
+      const visible = filteredMarkers();
+      els.markerCountBadge.textContent = `${state.markers.length} 个标点`;
+      els.adminMarkerCount.textContent = `${state.markers.length} 个`;
+
+      if (!visible.length) {
+        els.markerList.innerHTML = `<div class="muted" style="padding:8px 2px;">暂无匹配标点。</div>`;
+      } else {
+        els.markerList.innerHTML = visible.map(m => `
+          <div class="item" style="cursor:pointer; ${state.selectedMarkerId === m.id ? 'border-color:#bfdbfe;background:rgba(248,251,255,0.82);' : ''}" onclick="focusMarker('${m.id}')">
+            <div class="item-main">
+              <div class="item-title">
+                <span class="badge" style="border-color:${escapeHtml(m.color)}33;background:${escapeHtml(m.color)}11;color:${escapeHtml(m.color)};">
+                  <i data-lucide="map-pin"></i> 点位
+                </span>
+                <span>${escapeHtml(markerLabel(m))}</span>
+              </div>
+              <div class="item-meta">
+                坐标：(${Number(m.x).toFixed(1)}, ${Number(m.y).toFixed(1)})\n
+                ${m.remark ? '备注：' + escapeHtml(m.remark) : '备注：无'}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (!state.markers.length) {
+        els.adminMarkerList.innerHTML = `<div class="muted" style="padding:8px 2px;">暂无标点，请先新增。</div>`;
+      } else {
+        els.adminMarkerList.innerHTML = state.markers.map(m => `
+          <div class="item">
+            <div class="item-main">
+              <div class="item-title">
+                <span class="badge" style="border-color:${escapeHtml(m.color)}33;background:${escapeHtml(m.color)}11;color:${escapeHtml(m.color)};">
+                  <i data-lucide="map-pin"></i> 标点
+                </span>
+                <span>${escapeHtml(markerLabel(m))}</span>
+              </div>
+              <div class="item-meta">
+                坐标：(${Number(m.x).toFixed(1)}, ${Number(m.y).toFixed(1)})\n
+                ${m.remark ? '备注：' + escapeHtml(m.remark) : '备注：无'}
+              </div>
+            </div>
+            <div class="item-actions">
+              <button class="btn btn-ghost btn-sm" onclick="editMarker('${m.id}')">
+                <i data-lucide="edit-3"></i> 编辑
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="deleteMarker('${m.id}')">
+                <i data-lucide="trash-2"></i> 删除
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      els.mapOverlay.innerHTML = state.markers.map(m => {
+        const left = Math.max(0, Math.min(100, Number(m.x)));
+        const top = Math.max(0, Math.min(100, Number(m.y)));
+        return `
+          <div
+            class="marker-dot"
+            title="${escapeHtml(markerLabel(m))}"
+            style="left:${left}%; top:${top}%; background:${escapeHtml(m.color || '#3b82f6')};"
+            onclick="focusMarker('${m.id}')"
+          ></div>
+          <div class="marker-tag" style="left:${left}%; top:${top}%;">${escapeHtml(m.name)}</div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderPublicMessages() {
+      if (!state.publicMessages.length) {
+        els.publicMessageList.innerHTML = `<div class="muted" style="padding:8px 2px;">暂无留言。</div>`;
+        return;
+      }
+
+      els.publicMessageList.innerHTML = state.publicMessages.map(msg => {
+        const statusClass =
+          msg.status === 'replied' ? 'badge-green' :
+          msg.status === 'handled' ? 'badge-blue' :
+          'badge-yellow';
+
+        return `
+          <div class="item">
+            <div class="item-main">
+              <div class="item-title">
+                <span class="badge badge-blue"><i data-lucide="user"></i> ${escapeHtml(msg.name || '匿名')}</span>
+                <span class="badge ${statusClass}">${escapeHtml(msg.status || 'new')}</span>
+                <span class="muted" style="font-size:12px;">${escapeHtml(formatTime(msg.created_at))}</span>
+              </div>
+              <div class="item-meta">${escapeHtml(msg.content || '')}</div>
+              ${msg.reply ? `<div class="item-meta" style="margin-top:8px;color:#1f2937;"><strong>回复：</strong>${escapeHtml(msg.reply)}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderAdminMessages() {
+      els.adminMessageCount.textContent = `${state.adminMessages.length} 条`;
+
+      if (!state.adminMessages.length) {
+        els.adminMessageList.innerHTML = `<div class="muted" style="padding:8px 2px;">暂无留言。</div>`;
+        return;
+      }
+
+      els.adminMessageList.innerHTML = state.adminMessages.map(msg => {
+        const statusClass =
+          msg.status === 'replied' ? 'badge-green' :
+          msg.status === 'handled' ? 'badge-blue' :
+          'badge-yellow';
+
+        return `
+          <div class="item" style="flex-direction:column;">
+            <div class="item-main">
+              <div class="item-title">
+                <span class="badge badge-blue"><i data-lucide="message-square"></i> ${escapeHtml(msg.name || '匿名')}</span>
+                <span class="badge ${statusClass}">${escapeHtml(msg.status || 'new')}</span>
+                <span class="muted" style="font-size:12px;">${escapeHtml(formatTime(msg.created_at))}</span>
+              </div>
+              <div class="item-meta">
+                联系方式：${escapeHtml(msg.contact || '无')}\n
+                内容：${escapeHtml(msg.content || '')}
+              </div>
+            </div>
+
+            <div style="display:grid; gap:10px; width:100%;">
+              <div class="field">
+                <label class="label">回复</label>
+                <textarea class="textarea" id="reply-${escapeHtml(msg.id)}" placeholder="输入回复内容">${escapeHtml(msg.reply || '')}</textarea>
+              </div>
+
+              <div class="split">
+                <div class="field">
+                  <label class="label">状态</label>
+                  <select class="select" id="status-${escapeHtml(msg.id)}">
+                    <option value="new" ${msg.status === 'new' ? 'selected' : ''}>new</option>
+                    <option value="handled" ${msg.status === 'handled' ? 'selected' : ''}>handled</option>
+                    <option value="replied" ${msg.status === 'replied' ? 'selected' : ''}>replied</option>
+                  </select>
+                </div>
+                <div class="field" style="justify-content:end;">
+                  <label class="label">&nbsp;</label>
+                  <button class="btn btn-primary" onclick="saveMessage('${msg.id}')">
+                    <i data-lucide="save"></i> 保存
+                  </button>
+                </div>
+              </div>
+
+              <button class="btn btn-danger btn-sm" onclick="deleteMessage('${msg.id}')">
+                <i data-lucide="trash-2"></i> 删除留言
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function fillSiteForm() {
+      if (!els.siteForm) return;
+      els.siteForm.title.value = state.site.title || '';
+      els.siteForm.desc.value = state.site.desc || '';
+      els.siteForm.notice.value = state.site.notice || '';
+      els.siteForm.contact.value = state.site.contact || '';
+      els.siteForm.adminName.value = state.site.adminName || '';
+    }
+
+    function resetMarkerForm() {
+      els.markerForm.reset();
+      els.markerForm.color.value = '#3b82f6';
+      els.markerId.value = '';
+      state.editingMarkerId = null;
+      els.editingMarkerBadge.textContent = '新增模式';
+    }
+
+    function fillMarkerForm(m) {
+      els.markerId.value = m.id;
+      els.markerForm.name.value = m.name || '';
+      els.markerForm.category.value = m.category || '';
+      els.markerForm.color.value = m.color || '#3b82f6';
+      els.markerForm.x.value = m.x ?? '';
+      els.markerForm.y.value = m.y ?? '';
+      els.markerForm.remark.value = m.remark || '';
+      els.markerForm.image.value = m.image || '';
+      els.markerForm.querySelector('input[name="imageFile"]').value = '';
+      state.editingMarkerId = m.id;
+      els.editingMarkerBadge.textContent = '编辑中';
+    }
+
+    function focusMarker(id) {
+      state.selectedMarkerId = id;
+      const m = state.markers.find(x => x.id === id);
+      if (m) {
+        notify('已定位标点', m.name || '标点', 'info');
+      }
+      renderMarkers();
+    }
+
+    function focusFirstMarker() {
+      if (!state.markers.length) return notify('提示', '暂无标点', 'info');
+      focusMarker(state.markers[0].id);
+    }
+
+    function clearMarkerSearch() {
+      state.markerSearch = '';
+      els.markerSearch.value = '';
+      renderMarkers();
+    }
+
+    async function loadSite() {
+      const site = await api('/api/site');
+      state.site = site;
+      renderSite();
+      fillSiteForm();
+    }
+
+    async function loadMarkers() {
+      const markers = await api('/api/markers');
+      state.markers = markers;
+      renderMarkers();
+    }
+
+    async function loadMessages() {
+      const publicMsgs = await api('/api/messages/public');
+      state.publicMessages = publicMsgs;
+      renderPublicMessages();
+
+      if (state.me) {
+        const adminMsgs = await api('/api/admin/messages');
+        state.adminMessages = adminMsgs;
+        renderAdminMessages();
+      }
+    }
+
+    async function checkMe() {
+      try {
+        const res = await api('/api/auth/me');
+        state.me = res.user;
+      } catch {
+        state.me = null;
+      }
+      setLoginUI();
+    }
+
+    async function loadAdminData() {
+      if (!state.me) return;
+      const adminMsgs = await api('/api/admin/messages');
+      state.adminMessages = adminMsgs;
+      renderAdminMessages();
+    }
+
+    async function reloadAll() {
+      try {
+        await loadSite();
+        await loadMarkers();
+        await loadMessages();
+        notify('已刷新', '数据已重新加载', 'success');
+      } catch (e) {
+        notify('刷新失败', e.message, 'error');
+      }
+    }
+
+    async function logout() {
+      try { await api('/api/auth/logout', { method: 'POST' }); } catch {}
+      state.me = null;
+      state.adminMessages = [];
+      setLoginUI();
+      notify('已退出', '你已退出管理后台', 'success');
+    }
+
+    function getFile(form, name) {
+      return form.querySelector(`input[name="${name}"]`)?.files?.[0] || null;
+    }
+
+    // tabs
+    document.querySelectorAll('.tab[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.tab[data-tab]').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('#markersTab, #messagesTab').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.tab[data-admin-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.adminTab;
+        document.querySelectorAll('.tab[data-admin-tab]').forEach(x => x.classList.remove('active'));
+        ['siteTab', 'markerAdminTab', 'messageAdminTab'].forEach(id => document.getElementById(id).classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    els.markerSearch.addEventListener('input', () => {
+      state.markerSearch = els.markerSearch.value;
+      renderMarkers();
+    });
+
+    els.loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = els.loginForm.username.value.trim();
+      const password = els.loginForm.password.value;
+
+      try {
+        const res = await api('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ username, password })
+        });
+        state.me = res.user;
+        setLoginUI();
+        closeLogin();
+        notify('登录成功', `欢迎你，${res.user.displayName || res.user.username}`, 'success');
+        await loadMessages();
+      } catch (err) {
+        notify('登录失败', err.message, 'error');
+      }
+    });
+
+    els.publicMessageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const payload = {
+        name: form.name.value.trim(),
+        contact: form.contact.value.trim(),
+        content: form.content.value.trim()
+      };
+
+      if (!payload.content) {
+        notify('提交失败', '留言内容不能为空', 'error');
+        return;
+      }
+
+      try {
+        await api('/api/messages', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        form.reset();
+        notify('留言已提交', '感谢你的反馈', 'success');
+        await loadMessages();
+      } catch (err) {
+        notify('提交失败', err.message, 'error');
+      }
+    });
+
+    els.siteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!state.me) return notify('未登录', '请先登录管理员账号', 'error');
+
+      try {
+        const body = {
+          title: els.siteForm.title.value.trim(),
+          desc: els.siteForm.desc.value.trim(),
+          notice: els.siteForm.notice.value.trim(),
+          contact: els.siteForm.contact.value.trim(),
+          adminName: els.siteForm.adminName.value.trim()
+        };
+
+        const res = await api('/api/admin/site', {
+          method: 'PUT',
+          body: JSON.stringify(body)
+        });
+
+        state.site = res.site;
+        renderSite();
+        notify('保存成功', '站点设置已更新', 'success');
+      } catch (err) {
+        notify('保存失败', err.message, 'error');
+      }
+    });
+
+    els.mapUploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!state.me) return notify('未登录', '请先登录管理员账号', 'error');
+
+      const file = getFile(els.mapUploadForm, 'mapImage');
+      if (!file) return notify('请选择图片', '请先选择地图图片文件', 'error');
+
+      try {
+        const fd = new FormData();
+        fd.append('mapImage', file);
+
+        const res = await api('/api/admin/site/map-image', {
+          method: 'POST',
+          body: fd
+        });
+
+        state.site.mapImage = res.url;
+        renderSite();
+        notify('上传成功', '地图已更新', 'success');
+        els.mapUploadForm.reset();
+      } catch (err) {
+        notify('上传失败', err.message, 'error');
+      }
+    });
+
+    els.markerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!state.me) return notify('未登录', '请先登录管理员账号', 'error');
+
+      const id = els.markerId.value.trim();
+      const file = getFile(els.markerForm, 'imageFile');
+      const fd = new FormData();
+
+      fd.append('name', els.markerForm.name.value.trim());
+      fd.append('category', els.markerForm.category.value.trim());
+      fd.append('x', els.markerForm.x.value.trim());
+      fd.append('y', els.markerForm.y.value.trim());
+      fd.append('remark', els.markerForm.remark.value.trim());
+      fd.append('color', els.markerForm.color.value.trim());
+      fd.append('image', els.markerForm.image.value.trim());
+      if (file) fd.append('imageFile', file);
+
+      try {
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/admin/markers/${id}` : '/api/admin/markers';
+        const res = await api(url, { method, body: fd });
+
+        notify('保存成功', id ? '标点已更新' : '标点已新增', 'success');
+        await loadMarkers();
+        if (res.marker?.id) focusMarker(res.marker.id);
+        resetMarkerForm();
+      } catch (err) {
+        notify('保存失败', err.message, 'error');
+      }
+    });
+
+    async function saveMessage(id) {
+      const reply = document.getElementById(`reply-${id}`).value;
+      const status = document.getElementById(`status-${id}`).value;
+      try {
+        await api(`/api/admin/messages/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ reply, status })
+        });
+        notify('保存成功', '留言已更新', 'success');
+        await loadAdminData();
+      } catch (err) {
+        notify('保存失败', err.message, 'error');
+      }
+    }
+
+    async function deleteMessage(id) {
+      if (!confirm('确定删除这条留言吗？')) return;
+      try {
+        await api(`/api/admin/messages/${id}`, { method: 'DELETE' });
+        notify('删除成功', '留言已移除', 'success');
+        await loadAdminData();
+        await loadMessages();
+      } catch (err) {
+        notify('删除失败', err.message, 'error');
+      }
+    }
+
+    async function deleteMarker(id) {
+      const marker = state.markers.find(m => m.id === id);
+      if (!marker) return;
+      if (!confirm(`确定删除标点「${marker.name}」吗？`)) return;
+      try {
+        await api(`/api/admin/markers/${id}`, { method: 'DELETE' });
+        notify('删除成功', '标点已移除', 'success');
+        await loadMarkers();
+        resetMarkerForm();
+      } catch (err) {
+        notify('删除失败', err.message, 'error');
+      }
+    }
+
+    function editMarker(id) {
+      const marker = state.markers.find(m => m.id === id);
+      if (!marker) return;
+      fillMarkerForm(marker);
+      notify('已载入标点', '可以直接修改并保存', 'info');
+      document.querySelector('[data-admin-tab="markerAdminTab"]').click();
+    }
+
+    function focusMarker(id) {
+      state.selectedMarkerId = id;
+      const m = state.markers.find(x => x.id === id);
+      if (m) {
+        notify('已定位标点', m.name || '标点', 'info');
+      }
+      renderMarkers();
+    }
+
+    function resetMarkerForm() {
+      els.markerForm.reset();
+      els.markerForm.color.value = '#3b82f6';
+      els.markerId.value = '';
+      state.editingMarkerId = null;
+      els.editingMarkerBadge.textContent = '新增模式';
+    }
+
+    els.mapStage.addEventListener('click', (e) => {
+      if (!state.me) return;
+      const rect = els.mapStage.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      els.markerForm.x.value = Math.max(0, Math.min(100, x)).toFixed(1);
+      els.markerForm.y.value = Math.max(0, Math.min(100, y)).toFixed(1);
+      notify('已设置坐标', `X=${els.markerForm.x.value}, Y=${els.markerForm.y.value}`, 'info');
+      document.querySelector('[data-admin-tab="markerAdminTab"]').click();
+    });
+
+    window.openLogin = openLogin;
+    window.closeLogin = closeLogin;
+    window.closeLoginOnBackdrop = closeLoginOnBackdrop;
+    window.reloadAll = reloadAll;
+    window.logout = logout;
+    window.focusMarker = focusMarker;
+    window.focusFirstMarker = focusFirstMarker;
+    window.clearMarkerSearch = clearMarkerSearch;
+    window.editMarker = editMarker;
+    window.deleteMarker = deleteMarker;
+    window.saveMessage = saveMessage;
+    window.deleteMessage = deleteMessage;
+    window.resetMarkerForm = resetMarkerForm;
+
+    (async function init(){
+      try{
+        resetMarkerForm();
+        await checkMe();
+        await loadSite();
+        await loadMarkers();
+        await loadMessages();
+      }catch(err){
+        notify('加载失败', err.message, 'error');
+      }finally{
+        lucide.createIcons();
+      }
+    })();
+  </script>
+</body>
+</html>
