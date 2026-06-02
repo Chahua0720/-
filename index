@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>河中观花指南</title>
+
+  <style>
+    :root {
+      --text: #1d1d1f;
+      --sub: #6e6e73;
+      --blue: #007aff;
+      --red: #ff3b30;
+      --glass: rgba(255, 255, 255, 0.56);
+      --border: rgba(255, 255, 255, 0.68);
+      --shadow: 0 24px 72px rgba(0, 0, 0, 0.14);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,255,255,.96), transparent 32%),
+        radial-gradient(circle at 88% 10%, rgba(185,220,255,.64), transparent 30%),
+        linear-gradient(135deg, #edf3fa, #dce8f4);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      user-select: none;
+    }
+
+    .app {
+      width: 100%;
+      height: 100%;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+    }
+
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+
+    .sidebar {
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow: auto;
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,255,255,.43));
+      border: 1px solid rgba(255,255,255,.74);
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 850;
+      letter-spacing: -.6px;
+    }
+
+    .brand p,
+    .hint {
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 8px 0 0;
+    }
+
+    h3 {
+      margin: 0 0 14px;
+      font-size: 16px;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 15px;
+      padding: 12px 13px;
+      cursor: pointer;
+      color: var(--text);
+      background: rgba(255,255,255,.8);
+      box-shadow: 0 10px 26px rgba(0,0,0,.08);
+      font-weight: 760;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(0,0,0,.12);
+      background: rgba(255,255,255,.96);
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: linear-gradient(180deg, #1790ff, #007aff);
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: linear-gradient(180deg, #ff6b63, #ff3b30);
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      color: var(--sub);
+      font-size: 13px;
+      font-weight: 760;
+      margin-bottom: 7px;
+    }
+
+    .input,
+    .textarea {
+      width: 100%;
+      outline: none;
+      border: 1px solid rgba(255,255,255,.84);
+      border-radius: 15px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.76);
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    #detailInput {
+      min-height: 130px;
+    }
+
+    .input:focus,
+    .textarea:focus {
+      border-color: rgba(0,122,255,.45);
+      box-shadow: 0 0 0 4px rgba(0,122,255,.12);
+    }
+
+    .icon-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .icon-preview,
+    .list-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      object-fit: cover;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.06);
+    }
+
+    .detail-preview {
+      width: 104px;
+      height: 68px;
+      border-radius: 16px;
+      object-fit: cover;
+      background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(235,242,250,.9));
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+    }
+
+    .marker-list {
+      max-height: 236px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .marker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 17px;
+      background: rgba(255,255,255,.66);
+      border: 1px solid rgba(255,255,255,.76);
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .marker-item:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.9);
+    }
+
+    .marker-item.active {
+      outline: 3px solid rgba(0,122,255,.16);
+      background: rgba(245,250,255,.96);
+    }
+
+    .list-meta {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .list-title {
+      font-size: 14px;
+      font-weight: 820;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .list-desc {
+      margin-top: 3px;
+      color: var(--sub);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .workspace {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      padding: 14px;
+    }
+
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.34));
+      border: 1px solid rgba(255,255,255,.72);
+    }
+
+    .topbar {
+      position: absolute;
+      z-index: 30;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 19px;
+      background: rgba(255,255,255,.42);
+      border: 1px solid rgba(255,255,255,.62);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.86);
+      padding: 8px 12px;
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    .mini-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini {
+      border: none;
+      border-radius: 12px;
+      background: rgba(255,255,255,.82);
+      padding: 9px 12px;
+      cursor: pointer;
+      font-weight: 850;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .mini:hover {
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .map-shell {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .map-shell.grabbing {
+      cursor: grabbing;
+    }
+
+    .map-stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    .map-img {
+      display: block;
+      width: 1200px;
+      max-width: none;
+      pointer-events: none;
+      border-radius: 18px;
+      box-shadow: 0 22px 55px rgba(0,0,0,.13);
+    }
+
+    .marker-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .marker {
+      position: absolute;
+      width: 58px;
+      transform: translate(-50%, -100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      z-index: 5;
+      animation: markerDrop .48s cubic-bezier(.18, .95, .32, 1.25) both;
+    }
+
+    .marker::before {
+      content: "";
+      position: absolute;
+      top: 9px;
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      background: rgba(0,122,255,.22);
+      filter: blur(4px);
+      transform: scale(.9);
+      animation: markerPulse 2.2s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    .marker-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,.92);
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(0,0,0,.2);
+      transition: transform .26s cubic-bezier(.2, 1.4, .35, 1), box-shadow .26s ease;
+    }
+
+    .marker:hover .marker-icon {
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: 0 18px 34px rgba(0,0,0,.24);
+    }
+
+    .marker.active .marker-icon {
+      transform: translateY(-5px) scale(1.14);
+      outline: 4px solid rgba(0,122,255,.22);
+    }
+
+    .marker-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .marker-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 0 5px rgba(0,122,255,.18);
+      margin-top: -2px;
+    }
+
+    .marker-label {
+      max-width: 132px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transform: translateY(-1px);
+    }
+
+    .popover {
+      position: absolute;
+      z-index: 40;
+      width: min(330px, calc(100% - 40px));
+      display: none;
+      padding: 15px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.78);
+      box-shadow: 0 24px 60px rgba(0,0,0,.17);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      transform-origin: center bottom;
+    }
+
+    .popover.show {
+      display: block;
+      animation: popoverIn .36s cubic-bezier(.16, 1.08, .38, 1) both;
+    }
+
+    .popover-top {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .popover img {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      object-fit: cover;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+    }
+
+    .popover h4 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .popover p {
+      margin: 0;
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .detail-btn {
+      margin-top: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 11px 14px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 820;
+      background: linear-gradient(180deg, #1790ff, #007aff);
+      box-shadow: 0 12px 28px rgba(0,122,255,.22);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .detail-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(0,122,255,.28);
+    }
+
+    .empty {
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .modal,
+    .detail-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15,20,28,.42);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .modal.show,
+    .detail-modal.show {
+      display: flex;
+      animation: detailFadeIn .25s ease both;
+    }
+
+    .crop-card {
+      width: min(720px, 100%);
+      border-radius: 28px;
+      padding: 18px;
+      background: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.84);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      box-shadow: 0 30px 90px rgba(0,0,0,.24);
+    }
+
+    .crop-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .crop-head h3 {
+      margin-bottom: 4px;
+    }
+
+    .crop-box {
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(245,247,250,.88);
+      border: 1px solid rgba(255,255,255,.86);
+    }
+
+    #cropCanvas {
+      width: 360px;
+      height: 360px;
+      max-width: 100%;
+      border-radius: 22px;
+      background: #f5f5f7;
+      cursor: move;
+    }
+
+    .crop-tools {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+    }
+
+    .detail-modal {
+      z-index: 120;
+      padding: 24px;
+      background: rgba(12, 18, 28, .46);
+    }
+
+    .detail-card {
+      position: relative;
+      width: min(980px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      border-radius: 30px;
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(255,255,255,.84);
+      box-shadow: 0 34px 100px rgba(0,0,0,.28);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      animation: detailCardIn .42s cubic-bezier(.16, 1.08, .38, 1) both;
+    }
+
+    .detail-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 3;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 28px;
+      line-height: 1;
+      color: #1d1d1f;
+      background: rgba(255,255,255,.8);
+      box-shadow: 0 10px 26px rgba(0,0,0,.12);
+    }
+
+    .detail-image-wrap {
+      width: 100%;
+      min-height: 280px;
+      max-height: 58vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #eef3f8, #dfe8f4);
+      display: grid;
+      place-items: center;
+    }
+
+    .detail-image-wrap img {
+      width: 100%;
+      height: 100%;
+      max-height: 58vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .detail-content {
+      padding: 26px 30px 32px;
+    }
+
+    .detail-kicker {
+      color: #007aff;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+
+    .detail-content h2 {
+      margin: 0 0 14px;
+      font-size: clamp(26px, 4vw, 42px);
+      letter-spacing: -1px;
+    }
+
+    .detail-content p {
+      margin: 0;
+      color: #424245;
+      font-size: 16px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    @keyframes markerDrop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -120%) scale(.68);
+        filter: blur(4px);
+      }
+      70% {
+        opacity: 1;
+        transform: translate(-50%, -96%) scale(1.08);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1);
+      }
+    }
+
+    @keyframes markerPulse {
+      0%, 100% {
+        opacity: .34;
+        transform: scale(.82);
+      }
+      50% {
+        opacity: .68;
+        transform: scale(1.12);
+      }
+    }
+
+    @keyframes popoverIn {
+      0% {
+        opacity: 0;
+        transform: translateY(14px) scale(.9);
+        filter: blur(5px);
+      }
+      75% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.02);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes detailFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes detailCardIn {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(.94);
+        filter: blur(6px);
+      }
+      75% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.015);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 1050px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      .sidebar {
+        max-height: 43vh;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .sidebar,
+      .workspace {
+        border-radius: 22px;
+      }
+
+      .brand h1 {
+        font-size: 24px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .map-img {
+        width: 1000px;
+      }
+
+      .detail-modal {
+        padding: 12px;
+      }
+
+      .detail-content {
+        padding: 22px 20px 26px;
+      }
+
+      .detail-image-wrap {
+        min-height: 220px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar glass">
+      <section class="card brand">
+        <h1>河中观花指南</h1>
+        <p>校园观花地图指南。支持花点标注、高清图片展示、详细文字介绍、自定义图标与本地保存。</p>
+      </section>
+
+      <section class="card">
+        <h3>地图操作</h3>
+        <div class="btn-grid">
+          <button class="btn primary" id="addModeBtn">开启添加花点</button>
+          <button class="btn" id="resetBtn">重置视图</button>
+          <button class="btn" id="exportBtn">导出花点</button>
+          <button class="btn" id="importBtn">导入花点</button>
+          <button class="btn" id="restoreBtn">恢复内置</button>
+          <button class="btn danger" id="clearBtn">清空本地</button>
+        </div>
+        <p class="hint">首次打开会显示内置花点。编辑后数据会保存在当前浏览器本地。</p>
+        <input class="hidden" id="importInput" type="file" accept=".json" />
+      </section>
+
+      <section class="card">
+        <h3>花点编辑</h3>
+
+        <div class="field">
+          <label>花点名称</label>
+          <input class="input" id="titleInput" placeholder="例如：凤凰花" />
+        </div>
+
+        <div class="field">
+          <label>简短说明</label>
+          <textarea class="textarea" id="descInput" placeholder="用于地图小卡片展示"></textarea>
+        </div>
+
+        <div class="field">
+          <label>详细文字描述</label>
+          <textarea class="textarea" id="detailInput" placeholder="填写花卉介绍、观赏季节、位置说明、拍照建议等"></textarea>
+        </div>
+
+        <div class="field">
+          <label>标点图标</label>
+          <div class="icon-row">
+            <img class="icon-preview" id="iconPreview" alt="图标预览" />
+            <button class="btn" id="uploadBtn">上传并裁剪</button>
+            <input class="hidden" id="iconInput" type="file" accept="image/*" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>高清完整图片</label>
+          <div class="icon-row">
+            <img class="detail-preview" id="detailImagePreview" alt="高清图片预览" />
+            <button class="btn" id="uploadDetailImageBtn">上传高清图片</button>
+            <input class="hidden" id="detailImageInput" type="file" accept="image/*" />
+          </div>
+          <p class="hint">此图片不裁剪，点击详情时完整展示。</p>
+        </div>
+
+        <div class="btn-grid">
+          <button class="btn primary" id="saveBtn">保存修改</button>
+          <button class="btn danger" id="deleteBtn">删除花点</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>花点列表</h3>
+        <div class="marker-list" id="markerList"></div>
+        <div class="empty" id="emptyTip">暂无花点。请先开启添加模式并点击地图。</div>
+      </section>
+    </aside>
+
+    <main class="workspace glass">
+      <div class="map-wrap">
+        <div class="topbar">
+          <div class="badges">
+            <div class="badge">河中观花指南</div>
+            <div class="badge" id="modeBadge">模式：浏览</div>
+          </div>
+          <div class="mini-group">
+            <button class="mini" id="zoomOutBtn">－</button>
+            <button class="mini" id="zoomInBtn">＋</button>
+            <button class="mini" id="fitBtn">适应窗口</button>
+          </div>
+        </div>
+
+        <div class="map-shell" id="mapShell">
+          <div class="map-stage" id="mapStage">
+            <img class="map-img" id="mapImg" src="./ditu.png" alt="河中地图" />
+            <div class="marker-layer" id="markerLayer"></div>
+          </div>
+        </div>
+
+        <div class="popover" id="popover">
+          <div class="popover-top">
+            <img id="popIcon" alt="" />
+            <div>
+              <h4 id="popTitle">花点名称</h4>
+            </div>
+          </div>
+          <p id="popDesc">花点说明</p>
+          <button class="detail-btn" id="openDetailBtn">查看详情</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="cropModal">
+    <div class="crop-card">
+      <div class="crop-head">
+        <div>
+          <h3>裁剪标点图标</h3>
+          <div class="hint">拖动画布调整位置，使用滑块缩放图片。裁剪结果为正方形。</div>
+        </div>
+        <button class="btn" id="closeCropBtn">关闭</button>
+      </div>
+
+      <div class="crop-box">
+        <canvas id="cropCanvas" width="360" height="360"></canvas>
+      </div>
+
+      <div class="crop-tools">
+        <div class="range-row">
+          <span class="hint">缩放</span>
+          <input type="range" id="zoomRange" min="0.4" max="3" step="0.01" value="1" />
+        </div>
+        <div class="mini-group">
+          <button class="btn" id="centerCropBtn">居中</button>
+          <button class="btn primary" id="confirmCropBtn">确认裁剪</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-modal" id="detailModal">
+    <div class="detail-card">
+      <button class="detail-close" id="closeDetailBtn">×</button>
+
+      <div class="detail-image-wrap">
+        <img id="detailModalImage" alt="高清图片" />
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-kicker">河中观花指南</div>
+        <h2 id="detailModalTitle">花点名称</h2>
+        <p id="detailModalDesc">详细描述</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_ICON =
+      "data:image/svg+xml;utf8," +
+      encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#5AC8FA"/>
+            <stop offset="1" stop-color="#007AFF"/>
+          </linearGradient>
+        </defs>
+        <rect width="160" height="160" rx="38" fill="url(#g)"/>
+        <path d="M80 24c-24 0-43 19-43 43 0 34 43 69 43 69s43-35 43-69c0-24-19-43-43-43z" fill="white" opacity=".95"/>
+        <circle cx="80" cy="67" r="17" fill="#007AFF"/>
+      </svg>
+    `);
+
+    function svgDetailImage(title, color1, color2, flower) {
+      return "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+          <defs>
+            <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="${color1}"/>
+              <stop offset="1" stop-color="${color2}"/>
+            </linearGradient>
+            <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="rgba(0,0,0,.18)"/>
+            </filter>
+          </defs>
+          <rect width="1400" height="900" fill="url(#bg)"/>
+          <circle cx="1110" cy="160" r="190" fill="white" opacity=".22"/>
+          <circle cx="210" cy="720" r="240" fill="white" opacity=".18"/>
+          <g transform="translate(700 410)" filter="url(#s)">
+            <circle r="120" fill="white" opacity=".86"/>
+            <g fill="${flower}">
+              <ellipse cx="0" cy="-116" rx="55" ry="95"/>
+              <ellipse cx="100" cy="-38" rx="55" ry="95" transform="rotate(72 100 -38)"/>
+              <ellipse cx="62" cy="96" rx="55" ry="95" transform="rotate(144 62 96)"/>
+              <ellipse cx="-62" cy="96" rx="55" ry="95" transform="rotate(216 -62 96)"/>
+              <ellipse cx="-100" cy="-38" rx="55" ry="95" transform="rotate(288 -100 -38)"/>
+            </g>
+            <circle r="52" fill="#FFD66B"/>
+            <circle r="24" fill="white" opacity=".72"/>
+          </g>
+          <text x="700" y="730" text-anchor="middle" font-size="58" font-weight="700" fill="rgba(29,29,31,.82)" font-family="Arial,'Microsoft YaHei'">${title}</text>
+          <text x="700" y="790" text-anchor="middle" font-size="26" fill="rgba(29,29,31,.56)" font-family="Arial,'Microsoft YaHei'">河中观花指南 · 默认内置示意图</text>
+        </svg>
+      `);
+    }
+
+    function flowerIcon(color) {
+      return "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#edf6ff"/>
+            </linearGradient>
+          </defs>
+          <rect width="160" height="160" rx="38" fill="url(#bg)"/>
+          <g transform="translate(80 77)">
+            <ellipse cx="0" cy="-36" rx="20" ry="34" fill="${color}"/>
+            <ellipse cx="34" cy="-10" rx="20" ry="34" fill="${color}" transform="rotate(72 34 -10)"/>
+            <ellipse cx="21" cy="30" rx="20" ry="34" fill="${color}" transform="rotate(144 21 30)"/>
+            <ellipse cx="-21" cy="30" rx="20" ry="34" fill="${color}" transform="rotate(216 -21 30)"/>
+            <ellipse cx="-34" cy="-10" rx="20" ry="34" fill="${color}" transform="rotate(288 -34 -10)"/>
+            <circle r="18" fill="#FFD66B"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    const DEFAULT_DETAIL_IMAGE = svgDetailImage("暂无高清图片", "#F5FAFF", "#DCEBFA", "#8cc8ff");
+
+    const DEFAULT_MARKERS = [
+      {
+        id: "flower_gate",
+        x: 640,
+        y: 755,
+        title: "校门迎春花",
+        desc: "校门附近的春日花点，适合入校第一站打卡。",
+        detail:
+          "校门迎春花位于学校正门附近，是进入校园后较容易看到的观花点。\n\n观赏建议：\n1. 上午光线柔和，适合拍摄校门与花景合影。\n2. 可从正门广场向教学楼方向取景，画面层次更丰富。\n3. 花期可根据当年气候略有变化，建议春季重点关注。",
+        icon: flowerIcon("#ffcf33"),
+        detailImage: svgDetailImage("校门迎春花", "#FFF8D8", "#D9F2FF", "#FFD02E")
+      },
+      {
+        id: "flower_lake",
+        x: 920,
+        y: 570,
+        title: "天鹅湖睡莲",
+        desc: "湖边景观花点，水面倒影与绿植相映成趣。",
+        detail:
+          "天鹅湖周边环境开阔，水体、绿植与花卉共同构成校园中较具观赏性的区域。\n\n观赏建议：\n1. 傍晚或清晨光线较柔，适合拍摄水面倒影。\n2. 可沿湖边步道慢行观察不同角度的花景。\n3. 注意安全，不要越过护栏或靠近湿滑区域。",
+        icon: flowerIcon("#f7a8d8"),
+        detailImage: svgDetailImage("天鹅湖睡莲", "#E3F7FF", "#F9E2FF", "#F7A8D8")
+      },
+      {
+        id: "flower_library",
+        x: 600,
+        y: 295,
+        title: "图书馆紫荆",
+        desc: "图书馆周边花木集中，适合安静观赏。",
+        detail:
+          "图书馆周边绿化较好，建筑立面与花树形成整洁、安静的校园画面。\n\n观赏建议：\n1. 适合拍摄建筑与花枝结合的画面。\n2. 保持安静，避免影响图书馆周边学习环境。\n3. 可记录花期变化，形成校园植物观察笔记。",
+        icon: flowerIcon("#c47cff"),
+        detailImage: svgDetailImage("图书馆紫荆", "#F2E6FF", "#E6F4FF", "#B96DFF")
+      },
+      {
+        id: "flower_track",
+        x: 335,
+        y: 575,
+        title: "田径场木棉",
+        desc: "运动场旁的醒目花点，色彩热烈。",
+        detail:
+          "田径场周边空间开阔，木棉或红色系花木盛放时，视觉效果较强。\n\n观赏建议：\n1. 可将跑道、绿茵场与花树一同纳入构图。\n2. 体育活动时间请注意避让运动区域。\n3. 蓝天晴朗时拍摄效果更佳。",
+        icon: flowerIcon("#ff5a4f"),
+        detailImage: svgDetailImage("田径场木棉", "#FFE5DF", "#DFF4FF", "#FF5147")
+      },
+      {
+        id: "flower_teaching",
+        x: 730,
+        y: 660,
+        title: "教学楼桂花",
+        desc: "教学区附近的香气花点，秋季尤为明显。",
+        detail:
+          "教学楼附近的桂花点在秋季较有辨识度，香气清幽，是校园中具有季节记忆的观赏点。\n\n观赏建议：\n1. 秋季课间可在步道旁短暂停留观赏。\n2. 桂花花朵较小，适合近距离观察和特写拍摄。\n3. 请勿攀折花枝，文明观赏。",
+        icon: flowerIcon("#ffb43b"),
+        detailImage: svgDetailImage("教学楼桂花", "#FFF0D8", "#E7F8E9", "#FFB43B")
+      },
+      {
+        id: "flower_dorm",
+        x: 1005,
+        y: 235,
+        title: "宿舍区三角梅",
+        desc: "宿舍区附近常见花景，色彩明快。",
+        detail:
+          "宿舍区周边的三角梅色彩鲜明，花期较长，常为校园生活区域增添活力。\n\n观赏建议：\n1. 可选择道路转角或建筑边缘作为构图背景。\n2. 注意不要进入宿舍私密区域拍摄。\n3. 晴天色彩更鲜艳，适合记录校园生活气息。",
+        icon: flowerIcon("#ff4fa3"),
+        detailImage: svgDetailImage("宿舍区三角梅", "#FFE2F0", "#E2F7FF", "#FF4FA3")
+      }
+    ];
+
+    const STORAGE_KEY = "hz-flower-guide-markers-v1";
+
+    const mapShell = document.getElementById("mapShell");
+    const mapStage = document.getElementById("mapStage");
+    const mapImg = document.getElementById("mapImg");
+    const markerLayer = document.getElementById("markerLayer");
+    const markerList = document.getElementById("markerList");
+    const emptyTip = document.getElementById("emptyTip");
+
+    const addModeBtn = document.getElementById("addModeBtn");
+    const modeBadge = document.getElementById("modeBadge");
+    const resetBtn = document.getElementById("resetBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const fitBtn = document.getElementById("fitBtn");
+
+    const titleInput = document.getElementById("titleInput");
+    const descInput = document.getElementById("descInput");
+    const detailInput = document.getElementById("detailInput");
+    const iconPreview = document.getElementById("iconPreview");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const iconInput = document.getElementById("iconInput");
+
+    const detailImagePreview = document.getElementById("detailImagePreview");
+    const uploadDetailImageBtn = document.getElementById("uploadDetailImageBtn");
+    const detailImageInput = document.getElementById("detailImageInput");
+
+    const saveBtn = document.getElementById("saveBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+
+    const popover = document.getElementById("popover");
+    const popTitle = document.getElementById("popTitle");
+    const popDesc = document.getElementById("popDesc");
+    const popIcon = document.getElementById("popIcon");
+    const openDetailBtn = document.getElementById("openDetailBtn");
+
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const importInput = document.getElementById("importInput");
+    const restoreBtn = document.getElementById("restoreBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const cropModal = document.getElementById("cropModal");
+    const closeCropBtn = document.getElementById("closeCropBtn");
+    const confirmCropBtn = document.getElementById("confirmCropBtn");
+    const centerCropBtn = document.getElementById("centerCropBtn");
+    const cropCanvas = document.getElementById("cropCanvas");
+    const cropCtx = cropCanvas.getContext("2d");
+    const zoomRange = document.getElementById("zoomRange");
+
+    const detailModal = document.getElementById("detailModal");
+    const closeDetailBtn = document.getElementById("closeDetailBtn");
+    const detailModalImage = document.getElementById("detailModalImage");
+    const detailModalTitle = document.getElementById("detailModalTitle");
+    const detailModalDesc = document.getElementById("detailModalDesc");
+
+    let markers = [];
+    let selectedId = null;
+    let addMode = false;
+    let pendingIcon = null;
+    let pendingDetailImage = null;
+
+    const view = {
+      scale: 0.8,
+      min: 0.32,
+      max: 3,
+      x: 0,
+      y: 0,
+      dragging: false,
+      startX: 0,
+      startY: 0,
+      moved: false
+    };
+
+    const crop = {
+      img: null,
+      scale: 1,
+      x: 0,
+      y: 0,
+      dragging: false,
+      startX: 0,
+      startY: 0
+    };
+
+    function uid() {
+      return "f_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
+    }
+
+    function cloneDefaultMarkers() {
+      return JSON.parse(JSON.stringify(DEFAULT_MARKERS));
+    }
+
+    function html(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeMarker(item) {
+      return {
+        id: item.id || uid(),
+        x: Number(item.x) || 0,
+        y: Number(item.y) || 0,
+        title: item.title || "未命名花点",
+        desc: item.desc || "",
+        detail: item.detail || item.desc || "暂无详细介绍",
+        icon: item.icon || DEFAULT_ICON,
+        detailImage: item.detailImage || DEFAULT_DETAIL_IMAGE
+      };
+    }
+
+    function saveLocal() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(markers));
+    }
+
+    function loadLocalOrDefault() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          markers = Array.isArray(data) ? data.map(normalizeMarker) : cloneDefaultMarkers();
+        } else {
+          markers = cloneDefaultMarkers();
+          saveLocal();
+        }
+      } catch {
+        markers = cloneDefaultMarkers();
+        saveLocal();
+      }
+    }
+
+    function applyView() {
+      mapStage.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+    }
+
+    function fitView() {
+      const w = mapShell.clientWidth;
+      const h = mapShell.clientHeight;
+      const iw = mapImg.naturalWidth || 1200;
+      const ih = mapImg.naturalHeight || 800;
+      const s = Math.min(w / iw, h / ih) * 0.94;
+
+      view.scale = Math.max(view.min, Math.min(s, 1.3));
+      view.x = -iw * view.scale / 2;
+      view.y = -ih * view.scale / 2;
+      applyView();
+      hidePopover();
+    }
+
+    function updateMode() {
+      modeBadge.textContent = "模式：" + (addMode ? "添加花点" : "浏览");
+      addModeBtn.textContent = addMode ? "退出添加花点" : "开启添加花点";
+      addModeBtn.classList.toggle("primary", addMode);
+    }
+
+    function screenToMap(clientX, clientY) {
+      const rect = mapShell.getBoundingClientRect();
+      const px = clientX - rect.left - mapShell.clientWidth / 2;
+      const py = clientY - rect.top - mapShell.clientHeight / 2;
+
+      return {
+        x: (px - view.x) / view.scale,
+        y: (py - view.y) / view.scale
+      };
+    }
+
+    function zoomAt(clientX, clientY, factor) {
+      const old = view.scale;
+      const next = Math.max(view.min, Math.min(view.max, old * factor));
+      if (next === old) return;
+
+      const rect = mapShell.getBoundingClientRect();
+      const px = clientX - rect.left - mapShell.clientWidth / 2;
+      const py = clientY - rect.top - mapShell.clientHeight / 2;
+
+      const mx = (px - view.x) / old;
+      const my = (py - view.y) / old;
+
+      view.scale = next;
+      view.x = px - mx * next;
+      view.y = py - my * next;
+
+      applyView();
+      hidePopover();
+    }
+
+    function flyToMarker(marker) {
+      if (!marker) return;
+
+      const startX = view.x;
+      const startY = view.y;
+      const startS = view.scale;
+
+      const targetS = Math.max(view.min, Math.min(view.max, 1.05));
+      const targetX = -marker.x * targetS;
+      const targetY = -marker.y * targetS;
+
+      const duration = 680;
+      const start = performance.now();
+
+      function ease(t) {
+        return 1 - Math.pow(1 - t, 4);
+      }
+
+      function step(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const e = ease(p);
+
+        view.scale = startS + (targetS - startS) * e;
+        view.x = startX + (targetX - startX) * e;
+        view.y = startY + (targetY - startY) * e;
+        applyView();
+
+        if (p < 1) {
+          requestAnimationFrame(step);
+        } else {
+          const el = document.querySelector(`.marker[data-id="${marker.id}"]`);
+          if (el) showPopover(marker, el);
+        }
+      }
+
+      hidePopover();
+      requestAnimationFrame(step);
+    }
+
+    function renderMarkers() {
+      markerLayer.innerHTML = "";
+      markerList.innerHTML = "";
+      emptyTip.style.display = markers.length ? "none" : "block";
+
+      markers.forEach(marker => {
+        const el = document.createElement("div");
+        el.className = "marker" + (marker.id === selectedId ? " active" : "");
+        el.dataset.id = marker.id;
+        el.style.left = marker.x + "px";
+        el.style.top = marker.y + "px";
+        el.innerHTML = `
+          <div class="marker-icon">
+            <img src="${marker.icon || DEFAULT_ICON}" alt="">
+          </div>
+          <div class="marker-dot"></div>
+          <div class="marker-label">${html(marker.title || "未命名花点")}</div>
+        `;
+
+        el.addEventListener("click", e => {
+          e.stopPropagation();
+          selectMarker(marker.id);
+          showPopover(marker, el);
+        });
+
+        markerLayer.appendChild(el);
+
+        const item = document.createElement("div");
+        item.className = "marker-item" + (marker.id === selectedId ? " active" : "");
+        item.innerHTML = `
+          <img class="list-icon" src="${marker.icon || DEFAULT_ICON}" alt="">
+          <div class="list-meta">
+            <div class="list-title">${html(marker.title || "未命名花点")}</div>
+            <div class="list-desc">${html(marker.desc || "暂无说明")}</div>
+          </div>
+        `;
+
+        item.addEventListener("click", () => {
+          selectMarker(marker.id);
+          flyToMarker(marker);
+        });
+
+        markerList.appendChild(item);
+      });
+    }
+
+    function selectMarker(id) {
+      selectedId = id;
+      pendingIcon = null;
+      pendingDetailImage = null;
+
+      const marker = markers.find(m => m.id === id);
+      if (marker) {
+        titleInput.value = marker.title || "";
+        descInput.value = marker.desc || "";
+        detailInput.value = marker.detail || "";
+        iconPreview.src = marker.icon || DEFAULT_ICON;
+        detailImagePreview.src = marker.detailImage || DEFAULT_DETAIL_IMAGE;
+      } else {
+        titleInput.value = "";
+        descInput.value = "";
+        detailInput.value = "";
+        iconPreview.src = DEFAULT_ICON;
+        detailImagePreview.src = DEFAULT_DETAIL_IMAGE;
+      }
+
+      renderMarkers();
+    }
+
+    function clearSelection() {
+      selectedId = null;
+      pendingIcon = null;
+      pendingDetailImage = null;
+      titleInput.value = "";
+      descInput.value = "";
+      detailInput.value = "";
+      iconPreview.src = DEFAULT_ICON;
+      detailImagePreview.src = DEFAULT_DETAIL_IMAGE;
+      hidePopover();
+      renderMarkers();
+    }
+
+    function addMarker(clientX, clientY) {
+      const p = screenToMap(clientX, clientY);
+      const marker = {
+        id: uid(),
+        x: p.x,
+        y: p.y,
+        title: "新花点",
+        desc: "请编辑该花点简短说明",
+        detail: "这里可以填写花卉名称、观赏季节、位置说明、拍照建议和相关介绍。",
+        icon: DEFAULT_ICON,
+        detailImage: DEFAULT_DETAIL_IMAGE
+      };
+
+      markers.push(marker);
+      saveLocal();
+      selectMarker(marker.id);
+      renderMarkers();
+
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`.marker[data-id="${marker.id}"]`);
+        if (el) showPopover(marker, el);
+      });
+    }
+
+    function saveMarker() {
+      const marker = markers.find(m => m.id === selectedId);
+      if (!marker) {
+        alert("请先选择一个花点");
+        return;
+      }
+
+      marker.title = titleInput.value.trim() || "未命名花点";
+      marker.desc = descInput.value.trim() || "";
+      marker.detail = detailInput.value.trim() || marker.desc || "暂无详细介绍";
+
+      if (pendingIcon) {
+        marker.icon = pendingIcon;
+        pendingIcon = null;
+      }
+
+      if (pendingDetailImage) {
+        marker.detailImage = pendingDetailImage;
+        pendingDetailImage = null;
+      }
+
+      saveLocal();
+      renderMarkers();
+
+      const el = document.querySelector(`.marker[data-id="${marker.id}"]`);
+      if (el) showPopover(marker, el);
+    }
+
+    function deleteMarker() {
+      if (!selectedId) {
+        alert("请先选择要删除的花点");
+        return;
+      }
+
+      if (!confirm("确认删除该花点吗？")) return;
+
+      markers = markers.filter(m => m.id !== selectedId);
+      saveLocal();
+      clearSelection();
+    }
+
+    function showPopover(marker, el) {
+      popTitle.textContent = marker.title || "未命名花点";
+      popDesc.textContent = marker.desc || "暂无说明";
+      popIcon.src = marker.icon || DEFAULT_ICON;
+      openDetailBtn.dataset.id = marker.id;
+
+      popover.classList.remove("show");
+      void popover.offsetWidth;
+      popover.classList.add("show");
+
+      requestAnimationFrame(() => {
+        const shellRect = mapShell.getBoundingClientRect();
+        const markerRect = el.getBoundingClientRect();
+
+        const pw = popover.offsetWidth;
+        const ph = popover.offsetHeight;
+
+        let left = markerRect.left - shellRect.left + markerRect.width / 2 - pw / 2;
+        let top = markerRect.top - shellRect.top - ph - 18;
+
+        if (left < 14) left = 14;
+        if (left + pw > shellRect.width - 14) left = shellRect.width - pw - 14;
+        if (top < 78) top = markerRect.bottom - shellRect.top + 14;
+
+        popover.style.left = left + "px";
+        popover.style.top = top + "px";
+      });
+    }
+
+    function hidePopover() {
+      popover.classList.remove("show");
+    }
+
+    function openDetailModal(marker) {
+      if (!marker) return;
+
+      detailModalTitle.textContent = marker.title || "未命名花点";
+      detailModalDesc.textContent = marker.detail || marker.desc || "暂无详细介绍";
+      detailModalImage.src = marker.detailImage || DEFAULT_DETAIL_IMAGE;
+
+      detailModal.classList.add("show");
+    }
+
+    function closeDetailModal() {
+      detailModal.classList.remove("show");
+    }
+
+    function exportMarkers() {
+      const blob = new Blob([JSON.stringify(markers, null, 2)], {
+        type: "application/json"
+      });
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "hz-flower-guide-markers.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importMarkers(file) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!Array.isArray(data)) throw new Error();
+
+          markers = data.map(normalizeMarker);
+          saveLocal();
+          clearSelection();
+          renderMarkers();
+          alert("导入成功");
+        } catch {
+          alert("导入失败，JSON 格式不正确");
+        }
+      };
+
+      reader.readAsText(file, "utf-8");
+    }
+
+    function restoreDefaultMarkers() {
+      if (!confirm("确认恢复内置花点？当前本地编辑内容会被覆盖。")) return;
+      markers = cloneDefaultMarkers();
+      saveLocal();
+      clearSelection();
+      renderMarkers();
+      alert("已恢复内置花点");
+    }
+
+    function clearLocalData() {
+      if (!confirm("确认清空本地保存数据？清空后会重新载入内置花点。")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      markers = cloneDefaultMarkers();
+      saveLocal();
+      clearSelection();
+      renderMarkers();
+      alert("已清空本地数据，并恢复内置花点");
+    }
+
+    function openCrop(dataUrl) {
+      crop.img = new Image();
+
+      crop.img.onload = () => {
+        centerCropImage();
+        cropModal.classList.add("show");
+        drawCrop();
+      };
+
+      crop.img.src = dataUrl;
+    }
+
+    function centerCropImage() {
+      if (!crop.img) return;
+
+      const base = Math.max(
+        cropCanvas.width / crop.img.width,
+        cropCanvas.height / crop.img.height
+      );
+
+      crop.scale = base;
+      crop.x = (cropCanvas.width - crop.img.width * crop.scale) / 2;
+      crop.y = (cropCanvas.height - crop.img.height * crop.scale) / 2;
+
+      zoomRange.value = crop.scale;
+      zoomRange.min = Math.max(0.1, base * 0.5);
+      zoomRange.max = base * 4;
+    }
+
+    function drawCrop() {
+      cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+
+      cropCtx.fillStyle = "#f5f5f7";
+      cropCtx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+
+      if (crop.img) {
+        cropCtx.drawImage(
+          crop.img,
+          crop.x,
+          crop.y,
+          crop.img.width * crop.scale,
+          crop.img.height * crop.scale
+        );
+      }
+
+      cropCtx.save();
+      cropCtx.strokeStyle = "rgba(255,255,255,.95)";
+      cropCtx.lineWidth = 3;
+      cropCtx.strokeRect(1.5, 1.5, cropCanvas.width - 3, cropCanvas.height - 3);
+
+      cropCtx.strokeStyle = "rgba(0,122,255,.65)";
+      cropCtx.lineWidth = 2;
+      cropCtx.setLineDash([8, 8]);
+      cropCtx.strokeRect(28, 28, cropCanvas.width - 56, cropCanvas.height - 56);
+      cropCtx.restore();
+    }
+
+    function confirmCrop() {
+      if (!crop.img) return;
+
+      const out = document.createElement("canvas");
+      out.width = 256;
+      out.height = 256;
+      const ctx = out.getContext("2d");
+
+      ctx.drawImage(cropCanvas, 0, 0, 256, 256);
+
+      pendingIcon = out.toDataURL("image/png", 0.95);
+      iconPreview.src = pendingIcon;
+      cropModal.classList.remove("show");
+    }
+
+    mapShell.addEventListener("mousedown", e => {
+      if (e.button !== 0) return;
+      view.dragging = true;
+      view.moved = false;
+      view.startX = e.clientX - view.x;
+      view.startY = e.clientY - view.y;
+      mapShell.classList.add("grabbing");
+    });
+
+    window.addEventListener("mousemove", e => {
+      if (!view.dragging) return;
+
+      const nx = e.clientX - view.startX;
+      const ny = e.clientY - view.startY;
+
+      if (Math.abs(nx - view.x) > 2 || Math.abs(ny - view.y) > 2) {
+        view.moved = true;
+      }
+
+      view.x = nx;
+      view.y = ny;
+      applyView();
+      hidePopover();
+    });
+
+    window.addEventListener("mouseup", () => {
+      view.dragging = false;
+      mapShell.classList.remove("grabbing");
+      crop.dragging = false;
+    });
+
+    mapShell.addEventListener("wheel", e => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.12 : 0.9);
+    }, { passive: false });
+
+    mapShell.addEventListener("click", e => {
+      if (view.moved) return;
+      if (e.target.closest(".marker")) return;
+
+      if (addMode) {
+        addMarker(e.clientX, e.clientY);
+      } else {
+        clearSelection();
+      }
+    });
+
+    addModeBtn.addEventListener("click", () => {
+      addMode = !addMode;
+      updateMode();
+    });
+
+    resetBtn.addEventListener("click", fitView);
+    fitBtn.addEventListener("click", fitView);
+
+    zoomInBtn.addEventListener("click", () => {
+      const r = mapShell.getBoundingClientRect();
+      zoomAt(r.left + r.width / 2, r.top + r.height / 2, 1.15);
+    });
+
+    zoomOutBtn.addEventListener("click", () => {
+      const r = mapShell.getBoundingClientRect();
+      zoomAt(r.left + r.width / 2, r.top + r.height / 2, 0.87);
+    });
+
+    saveBtn.addEventListener("click", saveMarker);
+    deleteBtn.addEventListener("click", deleteMarker);
+
+    uploadBtn.addEventListener("click", () => {
+      if (!selectedId) {
+        alert("请先选择一个花点");
+        return;
+      }
+      iconInput.click();
+    });
+
+    iconInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => openCrop(reader.result);
+      reader.readAsDataURL(file);
+
+      e.target.value = "";
+    });
+
+    uploadDetailImageBtn.addEventListener("click", () => {
+      if (!selectedId) {
+        alert("请先选择一个花点");
+        return;
+      }
+      detailImageInput.click();
+    });
+
+    detailImageInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingDetailImage = reader.result;
+        detailImagePreview.src = pendingDetailImage;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    });
+
+    exportBtn.addEventListener("click", exportMarkers);
+    importBtn.addEventListener("click", () => importInput.click());
+    restoreBtn.addEventListener("click", restoreDefaultMarkers);
+    clearBtn.addEventListener("click", clearLocalData);
+
+    importInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (file) importMarkers(file);
+      e.target.value = "";
+    });
+
+    openDetailBtn.addEventListener("click", () => {
+      const id = openDetailBtn.dataset.id || selectedId;
+      const marker = markers.find(m => m.id === id);
+      openDetailModal(marker);
+    });
+
+    closeDetailBtn.addEventListener("click", closeDetailModal);
+
+    detailModal.addEventListener("click", e => {
+      if (e.target === detailModal) closeDetailModal();
+    });
+
+    closeCropBtn.addEventListener("click", () => {
+      cropModal.classList.remove("show");
+    });
+
+    centerCropBtn.addEventListener("click", () => {
+      centerCropImage();
+      drawCrop();
+    });
+
+    confirmCropBtn.addEventListener("click", confirmCrop);
+
+    zoomRange.addEventListener("input", () => {
+      if (!crop.img) return;
+
+      const old = crop.scale;
+      const next = Number(zoomRange.value);
+
+      const cx = cropCanvas.width / 2;
+      const cy = cropCanvas.height / 2;
+
+      const mx = (cx - crop.x) / old;
+      const my = (cy - crop.y) / old;
+
+      crop.scale = next;
+      crop.x = cx - mx * next;
+      crop.y = cy - my * next;
+
+      drawCrop();
+    });
+
+    cropCanvas.addEventListener("mousedown", e => {
+      crop.dragging = true;
+      crop.startX = e.offsetX - crop.x;
+      crop.startY = e.offsetY - crop.y;
+    });
+
+    cropCanvas.addEventListener("mousemove", e => {
+      if (!crop.dragging) return;
+      crop.x = e.offsetX - crop.startX;
+      crop.y = e.offsetY - crop.startY;
+      drawCrop();
+    });
+
+    cropCanvas.addEventListener("wheel", e => {
+      e.preventDefault();
+      if (!crop.img) return;
+
+      const old = crop.scale;
+      const factor = e.deltaY < 0 ? 1.08 : 0.92;
+      const min = Number(zoomRange.min);
+      const max = Number(zoomRange.max);
+      const next = Math.max(min, Math.min(max, old * factor));
+
+      const mx = (e.offsetX - crop.x) / old;
+      const my = (e.offsetY - crop.y) / old;
+
+      crop.scale = next;
+      crop.x = e.offsetX - mx * next;
+      crop.y = e.offsetY - my * next;
+      zoomRange.value = next;
+
+      drawCrop();
+    }, { passive: false });
+
+    window.addEventListener("resize", () => {
+      applyView();
+      hidePopover();
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        hidePopover();
+        cropModal.classList.remove("show");
+        closeDetailModal();
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        saveMarker();
+      }
+    });
+
+    function init() {
+      fitView();
+      loadLocalOrDefault();
+      renderMarkers();
+      iconPreview.src = DEFAULT_ICON;
+      detailImagePreview.src = DEFAULT_DETAIL_IMAGE;
+      updateMode();
+    }
+
+    mapImg.addEventListener("load", init);
+
+    if (mapImg.complete) {
+      init();
+    }
+  </script>
+</body>
+</html>
